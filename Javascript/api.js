@@ -1,64 +1,55 @@
-const API_KEY = "live_65IEecbByRBcrifCK6lPqoZXMmgzW8ydk7jn64EcIpK8JOiz1wp0z3FXacejb11x";
+import { API_KEY } from "./key.js";
 
 const BASE_URL = "https://api.thedogapi.com/v1";
 
 const headers = {
-  "x-api-key": API_KEY
+  "x-api-key": API_KEY,
+  "Content-Type": "application/json"
 };
 
-// Load random dogs
-
-export async function getDogs(limit = 6) {
-  const response = await fetch(
-    `${BASE_URL}/images/search?limit=${limit}&has_breeds=1`,
-    {
-      headers
-    }
-  );
+export async function getBreeds() {
+  const response = await fetch(`${BASE_URL}/breeds`, {
+    headers
+  });
 
   if (!response.ok) {
-    throw new Error("Could not load dog data.");
-  }
-
-  const data = await response.json();
-
-  return data;
-}
-
-// Search dog breeds
-
-export async function searchBreeds(searchText) {
-  const response = await fetch(
-    `${BASE_URL}/breeds/search?q=${searchText}`,
-    {
-      headers
-    }
-  );
-
-  if (!response.ok) {
-    throw new Error("Could not search dog breeds.");
+    throw new Error("Could not load dog breeds.");
   }
 
   const breeds = await response.json();
+  return breeds;
+}
 
-  const dogsWithImages = await Promise.all(
-    breeds.map(async (breed) => {
-      const imageResponse = await fetch(
-        `${BASE_URL}/images/search?breed_ids=${breed.id}`,
-        {
-          headers
-        }
-      );
-
-      const imageData = await imageResponse.json();
-
-      return {
-        id: breed.id,
-        url: imageData[0]?.url || "",
-        breeds: [breed]
-      };
-    })
+export async function getBreedImages(breedId, limit = 6) {
+  const response = await fetch(
+    `${BASE_URL}/images/search?breed_ids=${breedId}&limit=${limit}`,
+    {
+      headers
+    }
   );
 
-  return dogsWithImages;
+  if (!response.ok) {
+    throw new Error("Could not load dog images.");
+  }
+
+  const images = await response.json();
+  return images;
+}
+
+export async function likeDogImage(imageId) {
+  const response = await fetch(`${BASE_URL}/votes`, {
+    method: "POST",
+    headers,
+    body: JSON.stringify({
+      image_id: imageId,
+      value: 1
+    })
+  });
+
+  if (!response.ok) {
+    throw new Error("Could not like this dog image.");
+  }
+
+  const data = await response.json();
+  return data;
 }

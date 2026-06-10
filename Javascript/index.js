@@ -1,19 +1,29 @@
-import { getDogs, searchBreeds } from "./api.js";
-import { displayDogs, showMessage } from "./ui.js";
+import { getBreeds, getBreedImages, likeDogImage } from "./api.js";
+import {
+  fillBreedSelect,
+  displayBreedInfo,
+  displayImages,
+  showMessage
+} from "./ui.js";
 
-const dogContainer = document.getElementById("dogContainer");
-const searchInput = document.getElementById("searchInput");
-const searchBtn = document.getElementById("searchBtn");
-const loadBtn = document.getElementById("loadBtn");
+const breedSelect = document.getElementById("breedSelect");
+const likeBtn = document.getElementById("likeBtn");
 const message = document.getElementById("message");
+const breedInfo = document.getElementById("breedInfo");
+const gallery = document.getElementById("gallery");
 
-async function loadDogs() {
+let allBreeds = [];
+let currentImages = [];
+
+async function loadBreeds() {
   try {
-    showMessage(message, "Loading dogs...");
+    showMessage(message, "Loading breeds...");
 
-    const dogs = await getDogs(6);
+    allBreeds = await getBreeds();
 
-    displayDogs(dogs, dogContainer);
+    fillBreedSelect(allBreeds, breedSelect);
+
+    await loadSelectedBreed();
 
     showMessage(message, "");
   } catch (error) {
@@ -21,26 +31,27 @@ async function loadDogs() {
   }
 }
 
-async function handleSearch() {
+async function loadSelectedBreed() {
   try {
-    const searchText = searchInput.value.trim();
+    const selectedBreedId = breedSelect.value;
 
-    if (searchText === "") {
-      showMessage(message, "Please enter a dog breed.");
+    const selectedBreed = allBreeds.find((breed) => {
+      return breed.id === selectedBreedId;
+    });
+
+    if (!selectedBreed) {
       return;
     }
 
-    showMessage(message, "Searching...");
+    showMessage(message, "Loading breed photos...");
 
-    const dogs = await searchBreeds(searchText);
+    displayBreedInfo(selectedBreed, breedInfo);
 
-    if (dogs.length === 0) {
-      dogContainer.innerHTML = "";
-      showMessage(message, "No breeds found.");
-      return;
-    }
+    currentImages = await getBreedImages(selectedBreedId, 6);
 
-    displayDogs(dogs, dogContainer);
+    displayImages(currentImages, gallery);
+
+    likeBtn.disabled = currentImages.length === 0;
 
     showMessage(message, "");
   } catch (error) {
@@ -48,13 +59,22 @@ async function handleSearch() {
   }
 }
 
-searchBtn.addEventListener("click", handleSearch);
-loadBtn.addEventListener("click", loadDogs);
+async function handleLike() {
+  try {
+    if (currentImages.length === 0) {
+      showMessage(message, "There is no image to like yet.");
+      return;
+    }
 
-searchInput.addEventListener("keydown", (event) => {
-  if (event.key === "Enter") {
-    handleSearch();
+    await likeDogImage(currentImages[0].id);
+
+    showMessage(message, "Dog image liked!");
+  } catch (error) {
+    showMessage(message, error.message);
   }
-});
+}
 
+breedSelect.addEventListener("change", loadSelectedBreed);
+likeBtn.addEventListener("click", handleLike);
 
+loadBreeds();

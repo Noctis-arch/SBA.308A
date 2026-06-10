@@ -1,21 +1,43 @@
-export function displayDogs(dogs, container) {
-  container.innerHTML = "";
+export function fillBreedSelect(breeds, selectElement) {
+  selectElement.innerHTML = "";
 
-  dogs.forEach((dog) => {
-    const breed = dog.breeds[0];
+  breeds.forEach((breed) => {
+    const option = document.createElement("option");
+    option.value = breed.id;
+    option.textContent = breed.name;
 
+    selectElement.appendChild(option);
+  });
+}
+
+export function displayBreedInfo(breed, infoElement) {
+  infoElement.innerHTML = `
+    <h2>${breed.name}</h2>
+    <p><strong>Temperament:</strong> ${breed.temperament || "Not listed"}</p>
+    <p><strong>Life Span:</strong> ${breed.life_span || "Not listed"}</p>
+    <p><strong>Weight:</strong> ${breed.weight?.imperial || "N/A"} lbs</p>
+    <p><strong>Height:</strong> ${breed.height?.imperial || "N/A"} inches</p>
+    <p><strong>Bred For:</strong> ${breed.bred_for || "Not listed"}</p>
+  `;
+}
+
+export function displayImages(images, galleryElement) {
+  galleryElement.innerHTML = "";
+
+  if (images.length === 0) {
+    galleryElement.innerHTML = "<p>No images found for this breed.</p>";
+    return;
+  }
+
+  images.forEach((image) => {
     const card = document.createElement("div");
-    card.classList.add("dog-card");
+    card.classList.add("photo-card");
 
     card.innerHTML = `
-      <img src="${dog.url}" alt="${breed?.name || "Dog"}">
-      <h3>${breed?.name || "Unknown Breed"}</h3>
-      <p><strong>Temperament:</strong> ${breed?.temperament || "Not listed"}</p>
-      <p><strong>Life Span:</strong> ${breed?.life_span || "Not listed"}</p>
-      <p><strong>Weight:</strong> ${breed?.weight?.imperial || "N/A"} lbs</p>
+      <img src="${image.url}" alt="Dog breed image">
     `;
 
-    container.appendChild(card);
+    galleryElement.appendChild(card);
   });
 }
 
