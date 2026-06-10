@@ -7,29 +7,16 @@ const headers = {
   "Content-Type": "application/json"
 };
 
-export async function getBreeds() {
-  const response = await fetch(`${BASE_URL}/breeds`, {
-    headers
-  });
-
-  if (!response.ok) {
-    throw new Error("Could not load dog breeds.");
-  }
-
-  const breeds = await response.json();
-  return breeds;
-}
-
-export async function getBreedImages(breedId, limit = 6) {
+export async function getDogImages(page = 0, limit = 12) {
   const response = await fetch(
-    `${BASE_URL}/images/search?breed_ids=${breedId}&limit=${limit}`,
+    `${BASE_URL}/images/search?limit=${limit}&page=${page}&order=ASC`,
     {
       headers
     }
   );
 
   if (!response.ok) {
-    throw new Error("Could not load dog images.");
+    throw new Error("Could not load dog photos.");
   }
 
   const images = await response.json();
@@ -47,7 +34,7 @@ export async function likeDogImage(imageId) {
   });
 
   if (!response.ok) {
-    throw new Error("Could not like this dog image.");
+    throw new Error("Could not like this photo.");
   }
 
   const data = await response.json();

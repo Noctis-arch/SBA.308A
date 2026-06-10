@@ -3,34 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Dog Breed Gallery</title>
+  <title>Dog Photo Gallery</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header class="hero">
-    <h1>Dog Breed Gallery</h1>
-    <p>Pick a dog breed, view photos, and learn more about it.</p>
+    <h1>Dog Photo Gallery</h1>
+    <p>Browse dog photos, switch pages, and like your favorite pictures.</p>
   </header>
 
   <main>
     <section class="control-box">
-      <label for="breedSelect">Choose a breed:</label>
-      <select id="breedSelect">
-        <option value="">Loading breeds...</option>
-      </select>
-      <button id="likeBtn">Like Current Breed</button>
+      <button id="prevBtn">Previous</button>
+      <p id="pageText">Page 1</p>
+      <button id="nextBtn">Next</button>
     </section>
 
     <p id="message"></p>
 
-    <section id="breedInfo" class="breed-info"></section>
-
     <section>
-      <h2>Breed Photos</h2>
+      <h2>Dog Photos</h2>
       <div id="gallery" class="gallery"></div>
     </section>
   </main>
 
-  <script type="module" src="./Javascript/index.js"></script>
+  <script type="module" src="./javascript/index.js"></script>
 </body>
 </html>

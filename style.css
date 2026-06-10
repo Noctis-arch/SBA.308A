@@ -39,21 +39,16 @@ main {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 12px;
+  gap: 15px;
   flex-wrap: wrap;
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
 }
 
-label {
+#pageText {
   font-weight: bold;
-}
-
-select {
-  width: 300px;
-  padding: 12px;
-  border: 1px solid #bbb;
-  border-radius: 8px;
-  font-size: 15px;
+  margin: 0;
+  min-width: 80px;
+  text-align: center;
 }
 
 button {
@@ -81,22 +76,6 @@ button:disabled {
   margin: 20px 0;
 }
 
-.breed-info {
-  background-color: white;
-  padding: 20px;
-  border-radius: 12px;
-  margin: 20px 0;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
-}
-
-.breed-info h2 {
-  margin-top: 0;
-}
-
-.breed-info p {
-  line-height: 1.5;
-}
-
 .gallery {
   display: grid;
   grid-template-columns: repeat(auto-fit, 260px);
@@ -119,4 +98,14 @@ button:disabled {
   object-fit: cover;
   border-radius: 10px;
   background-color: #ddd;
+}
+
+.photo-card p {
+  font-size: 13px;
+  word-break: break-word;
+}
+
+.like-btn {
+  width: 100%;
+  margin-top: 8px;
 }

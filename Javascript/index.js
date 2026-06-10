@@ -1,29 +1,28 @@
-import { getBreeds, getBreedImages, likeDogImage } from "./api.js";
-import {
-  fillBreedSelect,
-  displayBreedInfo,
-  displayImages,
-  showMessage
-} from "./ui.js";
+import { getDogImages, likeDogImage } from "./api.js";
+import { displayImages, updatePageText, showMessage } from "./ui.js";
 
-const breedSelect = document.getElementById("breedSelect");
-const likeBtn = document.getElementById("likeBtn");
-const message = document.getElementById("message");
-const breedInfo = document.getElementById("breedInfo");
 const gallery = document.getElementById("gallery");
+const message = document.getElementById("message");
+const pageText = document.getElementById("pageText");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
 
-let allBreeds = [];
-let currentImages = [];
+let currentPage = 0;
 
-async function loadBreeds() {
+async function loadPage() {
   try {
-    showMessage(message, "Loading breeds...");
+    showMessage(message, "Loading dog photos...");
 
-    allBreeds = await getBreeds();
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
 
-    fillBreedSelect(allBreeds, breedSelect);
+    const images = await getDogImages(currentPage, 12);
 
-    await loadSelectedBreed();
+    displayImages(images, gallery, handleLikePhoto);
+    updatePageText(pageText, currentPage);
+
+    prevBtn.disabled = currentPage === 0;
+    nextBtn.disabled = false;
 
     showMessage(message, "");
   } catch (error) {
@@ -31,50 +30,32 @@ async function loadBreeds() {
   }
 }
 
-async function loadSelectedBreed() {
+async function handleLikePhoto(imageId, button) {
   try {
-    const selectedBreedId = breedSelect.value;
+    await likeDogImage(imageId);
 
-    const selectedBreed = allBreeds.find((breed) => {
-      return breed.id === selectedBreedId;
-    });
+    button.textContent = "Liked";
+    button.disabled = true;
 
-    if (!selectedBreed) {
-      return;
-    }
-
-    showMessage(message, "Loading breed photos...");
-
-    displayBreedInfo(selectedBreed, breedInfo);
-
-    currentImages = await getBreedImages(selectedBreedId, 6);
-
-    displayImages(currentImages, gallery);
-
-    likeBtn.disabled = currentImages.length === 0;
-
-    showMessage(message, "");
+    showMessage(message, "Dog photo liked!");
   } catch (error) {
     showMessage(message, error.message);
   }
 }
 
-async function handleLike() {
-  try {
-    if (currentImages.length === 0) {
-      showMessage(message, "There is no image to like yet.");
-      return;
-    }
+function goToNextPage() {
+  currentPage += 1;
+  loadPage();
+}
 
-    await likeDogImage(currentImages[0].id);
-
-    showMessage(message, "Dog image liked!");
-  } catch (error) {
-    showMessage(message, error.message);
+function goToPreviousPage() {
+  if (currentPage > 0) {
+    currentPage -= 1;
+    loadPage();
   }
 }
 
-breedSelect.addEventListener("change", loadSelectedBreed);
-likeBtn.addEventListener("click", handleLike);
+nextBtn.addEventListener("click", goToNextPage);
+prevBtn.addEventListener("click", goToPreviousPage);
 
-loadBreeds();
+loadPage();
